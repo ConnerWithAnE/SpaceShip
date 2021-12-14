@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 public class ShipModel {
-    public ArrayList<Ship> ships;
+    public ArrayList<Groupable> ships;
     ArrayList<ShipModelSubscriber> subscribers;
+    public selRect rect;
 
     public ShipModel() {
         subscribers = new ArrayList<>();
@@ -19,12 +20,27 @@ public class ShipModel {
         return s;
     }
 
-    public Optional<Ship> detectHit(double x, double y) {
+    public Optional<Groupable> detectHit(double x, double y) {
         return ships.stream().filter(s -> s.contains(x, y)).reduce((first, second) -> second);
     }
 
-    public void moveShip(Ship b, double dX, double dY) {
-        b.moveShip(dX,dY);
+    public ArrayList<Groupable> detectSelRectHit(double x, double y) {
+        ArrayList<Groupable> sel = new ArrayList<>();
+        ships.forEach(e -> {
+            if (rect.contains(e.getLeft(), e.getTop(), e.getRight(), e.getBottom())) {
+                sel.add(e);
+            }
+        });
+        return sel;
+    }
+
+    public void moveShip(ArrayList<Groupable> b, double dX, double dY) {
+        b.forEach(e -> e.moveShip(dX, dY));
+        notifySubscribers();
+    }
+
+    public void resizeSelRect(selRect rect, double x, double y) {
+        rect.resize(x, y);
         notifySubscribers();
     }
 
@@ -34,5 +50,28 @@ public class ShipModel {
 
     private void notifySubscribers() {
         subscribers.forEach(sub -> sub.modelChanged());
+    }
+
+    public selRect createRectSelect(double x, double y) {
+        rect = new selRect(x, y);
+        notifySubscribers();
+        return rect;
+    }
+
+    public void clearSelRect() {
+        rect = null;
+        notifySubscribers();
+    }
+
+    public ShipGroup createShipGroup(ArrayList<Groupable> selShips) {
+        ShipGroup g = new ShipGroup(selShips);
+        ships.add(g);
+        notifySubscribers();
+        System.out.println(g.getChildren());
+        return g;
+    }
+
+    public Groupable divideShipGroup(ArrayList<Groupable> selGroup) {
+        return null;
     }
 }

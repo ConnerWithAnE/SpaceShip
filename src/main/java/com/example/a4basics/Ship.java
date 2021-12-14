@@ -1,14 +1,16 @@
 package com.example.a4basics;
 
+import javafx.scene.Group;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
+import java.util.ArrayList;
 import java.util.stream.DoubleStream;
 
-public class Ship {
+public class Ship implements Groupable {
     double translateX, translateY;
     double[] xs = {0,20,0,-20,0};
     double[] ys = {24,-20,-12,-20,24};
@@ -17,6 +19,7 @@ public class Ship {
     WritableImage buffer;
     PixelReader reader;
     double clickX, clickY;
+    double selX, selY;
 
 
     public Ship(double newX, double newY) {
@@ -51,6 +54,17 @@ public class Ship {
         }
     }
 
+    @Override
+    public boolean hasChildren() {
+        return false;
+    }
+
+    @Override
+    public ArrayList<Groupable> getChildren() {
+        return null;
+    }
+
+    @Override
     public boolean contains(double x, double y) {
         clickX = x - translateX + shipWidth/2;
         clickY = y - translateY + shipHeight/2;
@@ -59,9 +73,52 @@ public class Ship {
         if (clickX >= 0 && clickX <= shipWidth && clickY >= 0 && clickY <= shipHeight) {
             if (reader.getColor((int) clickX, (int) clickY).equals(Color.BLACK)) inside = true;
         }
+        System.out.println(inside);
         return inside;
     }
 
+    public boolean containsSelRect(double x, double y) {
+        selX = x - translateX + shipWidth/2;
+        selY = y - translateY + shipHeight/2;
+        boolean inside = false;
+        if (selX >= 0 && selX <= shipWidth && selY >= 0 && selY <= shipHeight) {
+            inside = true;
+        }
+
+        return inside;
+    }
+
+    @Override
+    public double getLeft() {
+        return this.translateX;
+    }
+
+    @Override
+    public double getRight() {
+        return this.translateX + this.shipWidth;
+    }
+
+    @Override
+    public double getTop() {
+        return this.translateY;
+    }
+
+    @Override
+    public double getBottom() {
+        return this.translateY + this.shipHeight;
+    }
+
+    @Override
+    public double[] getDisplayXs() {
+        return this.displayXs;
+    }
+
+    @Override
+    public double[] getDisplayYs() {
+        return this.displayYs;
+    }
+
+    @Override
     public void moveShip(double dx, double dy) {
         for (int i = 0; i < displayXs.length; i++) {
             displayXs[i] += dx;

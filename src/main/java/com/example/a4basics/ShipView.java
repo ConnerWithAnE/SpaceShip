@@ -6,6 +6,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.effect.Bloom;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 
 import java.util.List;
 
@@ -38,17 +39,35 @@ public class ShipView extends StackPane implements ShipModelSubscriber {
 
     public void draw() {
         gc.clearRect(0, 0, myCanvas.getWidth(), myCanvas.getHeight());
+        if (model.rect != null) {
+            gc.setFill(Color.rgb(184, 134, 11, 1));
+            gc.setStroke(Color.rgb(203, 175, 98, 1));
+            gc.fillRect(model.rect.left, model.rect.top,
+                    model.rect.right - model.rect.left,
+                    model.rect.bottom - model.rect.top);
+        }
         model.ships.forEach(ship -> {
-            if (iModel.selectedShip == ship) {
+            drawShip(ship);
+        });
+    }
+
+
+    public void drawShip(Groupable group) {
+        if (group.hasChildren()) {
+            group.getChildren().forEach(c -> {
+                drawShip(c);
+            });
+        } else {
+            if (iModel.selectedShip != null && iModel.selectedShip.contains(group)) {
                 gc.setFill(Color.YELLOW);
                 gc.setStroke(Color.CORAL);
             } else {
                 gc.setStroke(Color.YELLOW);
                 gc.setFill(Color.CORAL);
             }
-            gc.fillPolygon(ship.displayXs, ship.displayYs, ship.displayXs.length);
-            gc.strokePolygon(ship.displayXs, ship.displayYs, ship.displayXs.length);
-        });
+            gc.fillPolygon(group.getDisplayXs(), group.getDisplayYs(), group.getDisplayXs().length);
+            gc.strokePolygon(group.getDisplayXs(), group.getDisplayYs(), group.getDisplayXs().length);
+        }
     }
 
     @Override

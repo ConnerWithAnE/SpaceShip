@@ -4,19 +4,43 @@ import java.util.ArrayList;
 
 public class InteractionModel {
     ArrayList<ShipModelSubscriber> subscribers;
-    Ship selectedShip;
+    ArrayList<Groupable> selectedShip;
+    selRect rect;
 
     public InteractionModel() {
         subscribers = new ArrayList<>();
+        selectedShip = new ArrayList<>();
     }
 
     public void clearSelection() {
-        selectedShip = null;
+        selectedShip.clear();
         notifySubscribers();
     }
 
-    public void setSelected(Ship newSelection) {
-        selectedShip = newSelection;
+    public void setSelected(Groupable newSelection, Boolean ctrl, Boolean isRectSelect) {
+        if (!ctrl && !isRectSelect) {
+            selectedShip.clear();
+            selectedShip.add(newSelection);
+        } else {
+            if (!selectedShip.contains(newSelection)) {
+                selectedShip.add(newSelection);
+            }
+        }
+        notifySubscribers();
+    }
+
+    public void removeSelected(Groupable newSelection) {
+        selectedShip.remove(newSelection);
+        notifySubscribers();
+    }
+
+    public void removeAllSelected() {
+        selectedShip.clear();
+        notifySubscribers();
+    }
+
+    public void setRect(selRect newRect) {
+        rect = newRect;
         notifySubscribers();
     }
 
