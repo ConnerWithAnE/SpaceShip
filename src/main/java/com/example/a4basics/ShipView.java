@@ -9,6 +9,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
 import java.util.List;
+import java.util.Optional;
 
 public class ShipView extends StackPane implements ShipModelSubscriber {
     Canvas myCanvas;
@@ -47,27 +48,46 @@ public class ShipView extends StackPane implements ShipModelSubscriber {
                     model.rect.bottom - model.rect.top);
         }
         model.ships.forEach(ship -> {
-            drawShip(ship);
+            checkShip(ship, false);
+        });
+        model.ships.forEach(g -> {
+            if (g.hasChildren()) {
+                drawOutline(g);
+            }
         });
     }
 
+    public void drawOutline(Groupable group) {
+        if (iModel.selectedShip != null && iModel.selectedShip.contains(group)) {
+            gc.setStroke(Color.WHITE);
+            gc.strokeRect(group.getLeft(), group.getTop(), group.getRight() - group.getLeft(), group.getBottom() - group.getTop() + 2);
+        }
+    }
 
-    public void drawShip(Groupable group) {
+
+    public void checkShip(Groupable group, Boolean isSelected) {
+        boolean isSelect = isSelected;
+        if (iModel.selectedShip != null && iModel.selectedShip.contains(group)) isSelect = true;
         if (group.hasChildren()) {
+            boolean finalIsSelect = isSelect;
             group.getChildren().forEach(c -> {
-                drawShip(c);
+                checkShip(c, finalIsSelect);
             });
         } else {
-            if (iModel.selectedShip != null && iModel.selectedShip.contains(group)) {
-                gc.setFill(Color.YELLOW);
-                gc.setStroke(Color.CORAL);
-            } else {
-                gc.setStroke(Color.YELLOW);
-                gc.setFill(Color.CORAL);
-            }
-            gc.fillPolygon(group.getDisplayXs(), group.getDisplayYs(), group.getDisplayXs().length);
-            gc.strokePolygon(group.getDisplayXs(), group.getDisplayYs(), group.getDisplayXs().length);
+            drawShip(group, isSelect);
         }
+    }
+
+    public void drawShip(Groupable group, Boolean selected) {
+        if (selected) {
+            gc.setFill(Color.YELLOW);
+            gc.setStroke(Color.CORAL);
+        } else {
+            gc.setStroke(Color.YELLOW);
+            gc.setFill(Color.CORAL);
+        }
+        gc.fillPolygon(group.getDisplayXs(), group.getDisplayYs(), group.getDisplayXs().length);
+        gc.strokePolygon(group.getDisplayXs(), group.getDisplayYs(), group.getDisplayXs().length);
     }
 
     @Override

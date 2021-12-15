@@ -1,5 +1,6 @@
 package com.example.a4basics;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -58,6 +59,16 @@ public class ShipModel {
         return rect;
     }
 
+    public void removePostGrouping(ArrayList<Groupable> newGroup) {
+        newGroup.forEach(e -> ships.remove(e));
+        notifySubscribers();
+    }
+
+    public void removeGroup(Groupable group) {
+        ships.remove(group);
+        notifySubscribers();
+    }
+
     public void clearSelRect() {
         rect = null;
         notifySubscribers();
@@ -71,7 +82,13 @@ public class ShipModel {
         return g;
     }
 
-    public Groupable divideShipGroup(ArrayList<Groupable> selGroup) {
-        return null;
+    public ArrayList<Groupable> divideShipGroup(Groupable selGroup) {
+        ArrayList<Groupable> dividedItems = new ArrayList<>();
+        selGroup.getChildren().forEach(g -> {
+            ships.add(g);
+            dividedItems.add(g);
+        });
+        notifySubscribers();
+        return dividedItems;
     }
 }

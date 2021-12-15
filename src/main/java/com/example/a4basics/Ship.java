@@ -77,35 +77,25 @@ public class Ship implements Groupable {
         return inside;
     }
 
-    public boolean containsSelRect(double x, double y) {
-        selX = x - translateX + shipWidth/2;
-        selY = y - translateY + shipHeight/2;
-        boolean inside = false;
-        if (selX >= 0 && selX <= shipWidth && selY >= 0 && selY <= shipHeight) {
-            inside = true;
-        }
-
-        return inside;
-    }
 
     @Override
     public double getLeft() {
-        return this.translateX;
+        return this.translateX - this.shipWidth/2;
     }
 
     @Override
     public double getRight() {
-        return this.translateX + this.shipWidth;
+        return this.translateX + this.shipWidth/2;
     }
 
     @Override
     public double getTop() {
-        return this.translateY;
+        return this.translateY - this.shipHeight/2;
     }
 
     @Override
     public double getBottom() {
-        return this.translateY + this.shipHeight;
+        return this.translateY + this.shipHeight/2;
     }
 
     @Override

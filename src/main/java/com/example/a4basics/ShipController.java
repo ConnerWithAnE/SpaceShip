@@ -82,6 +82,8 @@ public class ShipController {
         }
     }
 
+    //else if (!iModel.set.isEmpty(
+
     public void handleReleased(double x, double y, MouseEvent event) {
         switch (currentState) {
             case READY -> {
@@ -133,18 +135,26 @@ public class ShipController {
             //TODO
         } else if (keyEvent.getCode() == KeyCode.C) {
             //TODO
+        } else if (keyEvent.getCode() == KeyCode.X) {
+            //TODO
         } else if (keyEvent.getCode() == KeyCode.G) {
-            ShipGroup newGroup = model.createShipGroup(iModel.selectedShip);
-            iModel.removeAllSelected();
-            iModel.setSelected(newGroup, false, false);
+            if (iModel.selectedShip.size() > 1) {
+                ShipGroup newGroup = model.createShipGroup(iModel.selectedShip);
+                model.removePostGrouping(iModel.selectedShip);
+                iModel.setSelected(newGroup, false, false);
+            }
             //TODO
         } else if (keyEvent.getCode() == KeyCode.U) {
-            /*
-            if (iModel.selectedShip.size() == 1) {
-                iModel.selectedShip.forEach();
+            System.out.println(iModel.selectedShip.size());
+            if (iModel.selectedShip.size() == 1 && iModel.selectedShip.get(0).hasChildren()) {
+                ArrayList<Groupable> seperatedGroup = model.divideShipGroup(iModel.selectedShip.get(0));
+                model.removeGroup(iModel.selectedShip.get(0));
+                seperatedGroup.forEach(s -> {
+                   iModel.setSelected(s, true, false);
+                });
             }
-            */
             //TODO
+            System.out.println(iModel.selectedShip);
         }
         System.out.println(keyEvent.getCode());
     }
