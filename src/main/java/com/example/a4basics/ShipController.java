@@ -41,7 +41,16 @@ public class ShipController {
             case READY -> {
                 // context: on a ship?
                 Optional<Groupable> hit = model.detectHit(x, y);
-                if (!hit.isPresent()) {
+                if (hit.isPresent()) {
+                    if (iModel.selectedShip.contains(hit.get()) && event.isControlDown()) {
+                        iModel.removeSelected(hit.get());
+                    } else if (!iModel.selectedShip.isEmpty() && iModel.selectedShip.contains(hit.get())) {
+
+                    } else {
+                        iModel.setSelected(hit.get(), event.isControlDown(), false);
+                    }
+                    currentState = State.DRAGGING;
+                } else {
                     // on background - is Shift down?
                     if (event.isShiftDown()) {
                         // create ship
@@ -49,6 +58,7 @@ public class ShipController {
                         iModel.setSelected(newShip, event.isControlDown(), false);
                         currentState = State.DRAGGING;
                     } else {
+                        iModel.clearSelection();
                         currentState = State.READY;
                     }
                 }
@@ -87,17 +97,7 @@ public class ShipController {
     public void handleReleased(double x, double y, MouseEvent event) {
         switch (currentState) {
             case READY -> {
-                Optional<Groupable> hit = model.detectHit(x, y);
-                if (hit.isPresent()) {
-                    // on ship, so select
-                    if (iModel.selectedShip.contains(hit.get()) && event.isControlDown()) {
-                        iModel.removeSelected(hit.get());
-                    } else {
-                        iModel.setSelected(hit.get(), event.isControlDown(), false);
-                    }
-                } else {
-                    iModel.clearSelection();
-                }
+//
             }
             case DRAGGING -> {
                 currentState = State.READY;
@@ -105,8 +105,6 @@ public class ShipController {
             case RECTSELECTING -> {
                 if (iModel.rect != null) {
                     ArrayList<Groupable> hit = model.detectSelRectHit(x, y);
-                    System.out.println(!hit.isEmpty());
-                    System.out.println(hit);
                     if (!hit.isEmpty()) {
                         // on ship, so select
                         hit.forEach(s -> {
@@ -126,36 +124,52 @@ public class ShipController {
         }
     }
 
-    private void handleRectSelect(double x, double y) {
-        iModel.setRect(model.createRectSelect(x, y));
-    }
-
     public void handleKeyPressed(KeyEvent keyEvent) {
-        if (keyEvent.getCode() == KeyCode.V) {
-            //TODO
-        } else if (keyEvent.getCode() == KeyCode.C) {
-            //TODO
-        } else if (keyEvent.getCode() == KeyCode.X) {
-            //TODO
+        if (keyEvent.getCode() == KeyCode.V && keyEvent.isControlDown()) {
+            if (!iModel.clipboard.isEmpty()) {
+                iModel.clearSelection();
+                iModel.getFromClipboard().forEach(g -> {
+                    model.addCopied(g);
+                    iModel.setSelected(g, true, false);
+                });
+            }
+        } else if (keyEvent.getCode() == KeyCode.C  && keyEvent.isControlDown()) {
+            if (iModel.selectedShip.size() >= 1) {
+                iModel.copyToClipboard();
+            }
+        } else if (keyEvent.getCode() == KeyCode.X  && keyEvent.isControlDown()) {
+            if (iModel.selectedShip.size() >= 1) {
+                iModel.copyToClipboard();
+                model.removePostGrouping(iModel.selectedShip);
+            }
         } else if (keyEvent.getCode() == KeyCode.G) {
             if (iModel.selectedShip.size() > 1) {
                 ShipGroup newGroup = model.createShipGroup(iModel.selectedShip);
                 model.removePostGrouping(iModel.selectedShip);
                 iModel.setSelected(newGroup, false, false);
             }
-            //TODO
         } else if (keyEvent.getCode() == KeyCode.U) {
-            System.out.println(iModel.selectedShip.size());
             if (iModel.selectedShip.size() == 1 && iModel.selectedShip.get(0).hasChildren()) {
                 ArrayList<Groupable> seperatedGroup = model.divideShipGroup(iModel.selectedShip.get(0));
                 model.removeGroup(iModel.selectedShip.get(0));
+                iModel.clearSelection();
                 seperatedGroup.forEach(s -> {
                    iModel.setSelected(s, true, false);
                 });
             }
-            //TODO
-            System.out.println(iModel.selectedShip);
         }
         System.out.println(keyEvent.getCode());
+    }
+
+    private void handleRectSelect(double x, double y) {
+        iModel.setRect(model.createRectSelect(x, y));
+    }
+
+    public void handleSliderMoved(double newValue) {
+        if (iModel.selectedShip.size() >= 1) {
+            iModel.selectedShip.forEach(s -> {
+                model.rotate(s, newValue);
+            });
+        }
     }
 }

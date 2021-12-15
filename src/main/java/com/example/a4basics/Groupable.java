@@ -12,6 +12,10 @@ public interface Groupable {
 
     void moveShip(double dx, double dy);
 
+    void rotate(double amount);
+
+    Groupable duplicate();
+
     double getLeft();
 
     double getRight();

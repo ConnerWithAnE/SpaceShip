@@ -77,6 +77,12 @@ public class Ship implements Groupable {
         return inside;
     }
 
+    @Override
+    public Groupable duplicate() {
+        Ship twin = new Ship(this.translateX, this.translateY);
+        return twin;
+    }
+
 
     @Override
     public double getLeft() {

@@ -40,6 +40,11 @@ public class ShipModel {
         notifySubscribers();
     }
 
+    public void rotate(Groupable g, double amount) {
+        g.rotate(amount);
+        notifySubscribers();
+    }
+
     public void resizeSelRect(selRect rect, double x, double y) {
         rect.resize(x, y);
         notifySubscribers();
@@ -47,6 +52,10 @@ public class ShipModel {
 
     public void addSubscriber (ShipModelSubscriber aSub) {
         subscribers.add(aSub);
+    }
+
+    public void addCopied(Groupable g) {
+        ships.add(g);
     }
 
     private void notifySubscribers() {

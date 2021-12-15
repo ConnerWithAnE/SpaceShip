@@ -3,8 +3,10 @@ package com.example.a4basics;
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Slider;
 import javafx.scene.effect.Bloom;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
@@ -16,12 +18,15 @@ public class ShipView extends StackPane implements ShipModelSubscriber {
     GraphicsContext gc;
     ShipModel model;
     InteractionModel iModel;
+    Slider rotationSlider;
 
     public ShipView() {
         myCanvas = new Canvas(1000,700);
         gc = myCanvas.getGraphicsContext2D();
-        this.getChildren().add(myCanvas);
         this.setStyle("-fx-background-color: black");
+        rotationSlider = new Slider(-10, 10, 0);
+        VBox b = new VBox(rotationSlider, myCanvas);
+        this.getChildren().addAll(b);
     }
 
     public void setModel(ShipModel newModel) {
@@ -36,10 +41,16 @@ public class ShipView extends StackPane implements ShipModelSubscriber {
         myCanvas.setOnMousePressed(e -> controller.handlePressed(e.getX(),e.getY(), e));
         myCanvas.setOnMouseDragged(e -> controller.handleDragged(e.getX(),e.getY(), e));
         myCanvas.setOnMouseReleased(e -> controller.handleReleased(e.getX(),e.getY(), e));
+        rotationSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            controller.handleSliderMoved(rotationSlider.getValue());
+        });
     }
 
     public void draw() {
         gc.clearRect(0, 0, myCanvas.getWidth(), myCanvas.getHeight());
+        if (iModel.selectedShip == null) {
+            rotationSlider.adjustValue(0);
+        }
         if (model.rect != null) {
             gc.setFill(Color.rgb(184, 134, 11, 1));
             gc.setStroke(Color.rgb(203, 175, 98, 1));

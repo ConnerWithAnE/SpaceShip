@@ -11,19 +11,8 @@ public class ShipGroup implements Groupable{
 
     ArrayList<Groupable> groupChildren;
 
-    double translateX, translateY;
 
     double left = 0, top = 0, right = 0, bottom = 0;
-
-
-    double[] xs = {0,20,0,-20,0};
-    double[] ys = {24,-20,-12,-20,24};
-    double shipWidth, shipHeight;
-    double[] displayXs, displayYs;
-    WritableImage buffer;
-    PixelReader reader;
-    double clickX, clickY;
-    double selX, selY;
 
 
     public ShipGroup(ArrayList<Groupable> ships) {
@@ -41,13 +30,6 @@ public class ShipGroup implements Groupable{
     @Override
     public boolean hasChildren() {
         return !groupChildren.isEmpty();
-    }
-
-    public Groupable splitGroup() {
-        groupChildren.forEach(e -> {
-            System.out.println(e);
-        });
-        return null;
     }
 
     @Override
@@ -70,6 +52,7 @@ public class ShipGroup implements Groupable{
     @Override
     public void moveShip(double dx, double dy) {
         groupChildren.forEach(c -> c.moveShip(dx, dy));
+
         AtomicReference<Double> cLeft = new AtomicReference<>((double) 0);
         AtomicReference<Double> cTop = new AtomicReference<>((double) 0);
         AtomicReference<Double> cRight = new AtomicReference<>((double) 0);
@@ -85,6 +68,19 @@ public class ShipGroup implements Groupable{
         this.top = cTop.get();
         this.right = cRight.get();
         this.bottom = cBottom.get();
+    }
+
+    @Override
+    public void rotate(double amount) {
+
+    }
+
+    @Override
+    public Groupable duplicate() {
+        ArrayList<Groupable> dupes = new ArrayList<>();
+        groupChildren.forEach(e -> dupes.add(e.duplicate()));
+        ShipGroup gTwin = new ShipGroup(dupes);
+        return gTwin;
     }
 
     @Override

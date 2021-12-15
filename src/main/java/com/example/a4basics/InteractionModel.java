@@ -6,10 +6,12 @@ public class InteractionModel {
     ArrayList<ShipModelSubscriber> subscribers;
     ArrayList<Groupable> selectedShip;
     selRect rect;
+    ShipClipboard clipboard;
 
     public InteractionModel() {
         subscribers = new ArrayList<>();
         selectedShip = new ArrayList<>();
+        clipboard = new ShipClipboard();
     }
 
     public void clearSelection() {
@@ -37,6 +39,21 @@ public class InteractionModel {
     public void removeAllSelected() {
         selectedShip.clear();
         notifySubscribers();
+    }
+
+    public void copyToClipboard() {
+        clipboard.emptyClip();
+        selectedShip.forEach(e -> {
+            clipboard.addItem(e.duplicate());
+        });
+    }
+
+    public ArrayList<Groupable> getFromClipboard() {
+        ArrayList<Groupable> newItems = new ArrayList<>();
+        clipboard.getClipBoard().forEach(e -> {
+            newItems.add(e.duplicate());
+        });
+        return newItems;
     }
 
     public void setRect(selRect newRect) {

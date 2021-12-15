@@ -24,9 +24,4 @@ public class selRect {
         return x >= left && width <= right && y >= top && height <= bottom;
     }
 
-    public void resetStartCords() {
-        startX = left;
-        startY = top;
-    }
-
 }
