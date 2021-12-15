@@ -24,7 +24,7 @@ public class ShipView extends StackPane implements ShipModelSubscriber {
         myCanvas = new Canvas(1000,700);
         gc = myCanvas.getGraphicsContext2D();
         this.setStyle("-fx-background-color: black");
-        rotationSlider = new Slider(-10, 10, 0);
+        rotationSlider = new Slider(-5, 5, 0);
         VBox b = new VBox(rotationSlider, myCanvas);
         this.getChildren().addAll(b);
     }
@@ -48,7 +48,7 @@ public class ShipView extends StackPane implements ShipModelSubscriber {
 
     public void draw() {
         gc.clearRect(0, 0, myCanvas.getWidth(), myCanvas.getHeight());
-        if (iModel.selectedShip == null) {
+        if (iModel.selectedShip.size() == 0) {
             rotationSlider.adjustValue(0);
         }
         if (model.rect != null) {

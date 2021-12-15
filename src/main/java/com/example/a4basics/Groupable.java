@@ -12,7 +12,7 @@ public interface Groupable {
 
     void moveShip(double dx, double dy);
 
-    void rotate(double amount);
+    void rotate(double amount, ArrayList<Double>... x);
 
     Groupable duplicate();
 

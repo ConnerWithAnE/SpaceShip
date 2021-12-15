@@ -8,6 +8,8 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Optional;
 import java.util.stream.DoubleStream;
 
 public class Ship implements Groupable {
@@ -124,8 +126,13 @@ public class Ship implements Groupable {
         translateY += dy;
     }
 
-    public void rotate(double a) {
-        rotate(a,translateX,translateY);
+    public void rotate(double a, ArrayList<Double>... x) {
+        Optional<ArrayList<Double>> temp = Arrays.stream(x).findAny();
+        if (!temp.isEmpty()) {
+            rotate(a, temp.get().get(0), temp.get().get(1));
+        } else {
+            rotate(a, translateX, translateY);
+        }
     }
 
     public void rotate(double a, double cx, double cy) {
@@ -137,6 +144,8 @@ public class Ship implements Groupable {
             displayXs[i] = rotateX(x, y, radians) + cx;
             displayYs[i] = rotateY(x, y, radians) + cy;
         }
+//        translateX = Arrays.stream(displayXs).min().getAsDouble();
+//        translateY = Arrays.stream(displayYs).max().getAsDouble();
     }
 
     private double rotateX(double x, double y, double thetaR) {

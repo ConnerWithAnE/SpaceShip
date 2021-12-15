@@ -1,8 +1,5 @@
 package com.example.a4basics;
 
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.WritableImage;
-
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -52,7 +49,10 @@ public class ShipGroup implements Groupable{
     @Override
     public void moveShip(double dx, double dy) {
         groupChildren.forEach(c -> c.moveShip(dx, dy));
+        setEdges();
+    }
 
+    public void setEdges() {
         AtomicReference<Double> cLeft = new AtomicReference<>((double) 0);
         AtomicReference<Double> cTop = new AtomicReference<>((double) 0);
         AtomicReference<Double> cRight = new AtomicReference<>((double) 0);
@@ -70,10 +70,6 @@ public class ShipGroup implements Groupable{
         this.bottom = cBottom.get();
     }
 
-    @Override
-    public void rotate(double amount) {
-
-    }
 
     @Override
     public Groupable duplicate() {
@@ -112,4 +108,20 @@ public class ShipGroup implements Groupable{
     public double[] getDisplayYs() {
         return new double[0];
     }
+
+
+    public void rotate(double a, ArrayList<Double>... x) {
+        rotate(a,this.right - ((this.right - this.left)/2),this.bottom - ((this.bottom - this.top)/2));
+    }
+
+    public void rotate(double a, double cx, double cy) {
+        ArrayList<Double> temp = new ArrayList<>();
+        temp.add(cx);
+        temp.add(cy);
+        groupChildren.forEach((s -> {
+            s.rotate(a, temp);
+        }));
+        //setEdges();
+    }
+
 }
