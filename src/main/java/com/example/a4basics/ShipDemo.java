@@ -1,10 +1,3 @@
-/*
- * Name: Conner Hnatiuk
- * NSID: cmh860
- * Student #: 11249927
- * Class: CMPT381
- */
-
 package com.example.a4basics;
 
 import javafx.application.Application;
